@@ -99,7 +99,7 @@ def number_p_distribution(beta, fugacity_list_path):
 	return number_p_dist
 	
 def read_in_number_p_distribution(beta):
-	f = open("../number_particles_analytical/beta_" + "%0.1f" % beta) 
+	f = open("number_particles_analytical/beta_" + "%0.1f" % beta) 
 	val = f.readline().split(',')
 	for i in range(len(val) -1):
 		val[i] = float(val[i])
