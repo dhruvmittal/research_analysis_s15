@@ -198,16 +198,6 @@ def prepareBMvsDimensionlessPressure(path):
     # integrate N
     integrated_N = integrate.cumtrapz(new_N, [math.exp(betamu) for betamu in x])
 
-    # Test the input beta_mu -> fugacity vs the fugacity in the file
-    fugacity_input = [math.exp(beta_mu) for beta_mu in x]
-    with open('../fugacity_input_25.txt') as f:
-        fugacity_file = [float(a) for a in f.readlines()]
-
-    print fugacity_input
-    print fugacity_file
-    exit()
-
-
     # divide integrated N by fugacity (aka e^(beta*mu))
     yes_coupling_log_z = [a[0] / math.exp(a[1]) for a in zip(integrated_N, x)]
     
