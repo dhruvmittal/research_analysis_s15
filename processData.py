@@ -9,7 +9,9 @@ import aggregateData as ag
 import matplotlib.pyplot as plt
 
 #--------- CONSTANTS ----------------#
-BETA = 8.0
+#BETA = 8.0
+BETA = raw_input('beta = ')
+BETA = float(BETA)
 INPUT = '../exec/beta_' + '%0.1f' % BETA
 Nx = 40
 
