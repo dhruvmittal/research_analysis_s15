@@ -174,40 +174,34 @@ def prepareBMvsDimensionlessContact(path):
     return x,y
 
 def prepareBMvsDimensionlessPressure(path):
-    #no_coupling_omega = OmegaNaughtDistribution(BETA, fugacity_list_path='../fugacity_input_25.txt')
-
-    # read in logZ, convert it to omega
+    # logZ = integrate N dz / z
+    # read in logZ
     no_coupling_log_z = read_in_log_z_distribution(BETA)
-    no_coupling_omega = [logz / BETA for logz in no_coupling_log_z] 
+
+    # convert it to omega
+    #no_coupling_omega = [logz / BETA for logz in no_coupling_log_z] 
 
     yes_coupling_density = prepareForPlot(path, 0)
 
     x = []
     N = []
-
     for i in range(len(yes_coupling_density[0])):
         x.append(math.log(yes_coupling_density[0][i]))
         N.append(yes_coupling_density[1][i])
 
     new_N = averageData.movingAverage(N)
-    integrated_N = [1.0] * len(new_N)
 
     x = x[1:-1]
     no_coupling_log_z = no_coupling_log_z[1:-1]
-    no_coupling_omega = no_coupling_omega[1:-1]
+    #no_coupling_omega = no_coupling_omega[1:-1]
 
     # integrate N
-    #count = 0
-    #for i in range(1, len(new_N)):
-    #    integrated_N[i] = integrate.simps(new_N[0:i], x[0:i]) 
-    #    count += 1
-
     integrated_N = integrate.cumtrapz(new_N, [math.exp(betamu) for betamu in x])
 
     # divide integrated N by fugacity (aka e^(beta*mu))
-    log_z_with_coupling = [a[0] / math.exp(a[1]) for a in zip(integrated_N, x)]
-
-    ratio = [a[0] / a[1] for a in zip(log_z_with_coupling, no_coupling_log_z[1:-1])]
+    yes_coupling_log_z = [a[0] / math.exp(a[1]) for a in zip(integrated_N, x)]
+    
+    ratio = [a[0] / a[1] for a in zip(yes_coupling_log_z, no_coupling_log_z[1:-1])]
 
     return x, ratio
 
@@ -307,7 +301,6 @@ def getPressure(calculate=False):
 #getDensityBMPlot(True)
 #getContactBMPlot()
 getPressure(calculate=True)
-#print calculateOmegaNaught(BETA, 0)
 #print NumberDensityNoCoupling(OmegaNaughtDistribution(BETA, None, '../fugacity_input.txt'))
 
 
