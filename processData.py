@@ -191,6 +191,7 @@ def prepareBMvsDimensionlessPressure(path):
     integrated_N = [1.0] * len(new_N)
 
     x = x[1:-1]
+    no_coupling_log_z = no_coupling_log_z[1:-1]
     no_coupling_omega = no_coupling_omega[1:-1]
 
     # integrate N
@@ -199,7 +200,7 @@ def prepareBMvsDimensionlessPressure(path):
     #    integrated_N[i] = integrate.simps(new_N[0:i], x[0:i]) 
     #    count += 1
 
-    integrated_N = integrate.cumtrapz(new_N, x)
+    integrated_N = integrate.cumtrapz(new_N, [math.exp(betamu) for betamu in x])
 
     # divide integrated N by fugacity (aka e^(beta*mu))
     log_z_with_coupling = [a[0] / math.exp(a[1]) for a in zip(integrated_N, x)]
