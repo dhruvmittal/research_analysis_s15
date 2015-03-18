@@ -9,11 +9,11 @@ import aggregateData as ag
 import matplotlib.pyplot as plt
 
 #--------- CONSTANTS ----------------#
-INPUT = '../exec/beta_2.0'
-BETA = 2.0
+BETA = 8.0
+INPUT = '../exec/beta_' + '%0.1f' % BETA
 Nx = 40
 
-L = 1.00 * Nx
+L = 1.00 * Nx # This is wrong
 
 HBAR = 1
 OMEGA_FREQ = 1
@@ -31,6 +31,7 @@ def prepareForPlot(path, var_num, need_coupling=False):
         return x, y, path.split('/')[-1].split('_')[-1]
     return x,y
 
+# Deprecated
 def calculateOmegaNaught(beta, beta_mu):
     result = 0.0
     #prev = 1
@@ -41,10 +42,12 @@ def calculateOmegaNaught(beta, beta_mu):
         result = result + current
     return 2 * result 
 
+# Deprecated
 def NumberDensityNoCoupling(omega_naught_list):
     # dOmega_0 / d mu
     return np.gradient(omega_naught_list) / dBetaMu
 
+# Deprecated
 def OmegaNaughtDistribution(beta, beta_mu_list=None, fugacity_list_path=None):
     if beta_mu_list == None:
         f = open(fugacity_list_path)
@@ -57,6 +60,7 @@ def OmegaNaughtDistribution(beta, beta_mu_list=None, fugacity_list_path=None):
         omega_naught_list.append(calculateOmegaNaught(beta, beta_mu))
     return omega_naught_list
 
+# Deprecated
 def calc_log_z(beta, z):
 	result = 0.0
 	for n in range(0, 100):
@@ -65,6 +69,7 @@ def calc_log_z(beta, z):
 		result = result + current
 	return 2 * result
 
+# Deprecated
 def number_p_distribution_numerical(beta, fugacity_list_path):
 	f = open(fugacity_list_path)
 	fugacity_list = []
@@ -82,6 +87,7 @@ def number_p_distribution_numerical(beta, fugacity_list_path):
 		number_p.append(fugacity_list[i] * (dy[i]/dx[i]))
 	return number_p
 			
+# Deprecated
 def number_p_distribution(beta, fugacity_list_path):
 	f = open(fugacity_list_path)
 	fugacity_list = []
@@ -101,8 +107,17 @@ def number_p_distribution(beta, fugacity_list_path):
 def read_in_number_p_distribution(beta):
 	f = open("number_particles_analytical/beta_" + "%0.1f" % beta) 
 	val = f.readline().split(',')
-	for i in range(len(val) -1):
-		val[i] = float(val[i])
+	#for i in range(len(val) -1):
+		#val[i] = float(val[i])
+	val = [float(x) for x in val]
+	return val
+
+def read_in_log_z_distribution(beta):
+	f = open("log_z_analytical/beta_" + "%0.1f" % beta) 
+	val = f.readline().split(',')
+	#for i in range(len(val) -1):
+		#val[i] = float(val[i])
+	val = [float(x) for x in val]
 	return val
 
 def prepareBMvsDimensionlessDensity_2(path):
@@ -118,7 +133,7 @@ def prepareBMvsDimensionlessDensity_2(path):
             #print yes_coupling[0][i], yes_coupling[1][i], no_coupling_results[i]
             x.append(math.log(yes_coupling[0][i]))
             y.append(yes_coupling[1][i] / no_coupling_results[i])
-            print yes_coupling[1][i] / no_coupling_results[i]
+            #print yes_coupling[1][i] / no_coupling_results[i]
             #y.append(no_coupling_results[i])
             #y.append(yes_coupling[1][i])
         except:
@@ -126,6 +141,7 @@ def prepareBMvsDimensionlessDensity_2(path):
             pass
     return x,y
 
+# Deprecated
 def prepareBMvsDimensionlessDensity(path_no_coupling, path):
     no_coupling = prepareForPlot(path_no_coupling, 0)
     yes_coupling = prepareForPlot(path, 0)
@@ -156,31 +172,45 @@ def prepareBMvsDimensionlessContact(path):
     return x,y
 
 def prepareBMvsDimensionlessPressure(path):
-    no_coupling_omega = OmegaNaughtDistribution(BETA, fugacity_list_path='../fugacity_input_25.txt')
+    #no_coupling_omega = OmegaNaughtDistribution(BETA, fugacity_list_path='../fugacity_input_25.txt')
+
+    # read in logZ, convert it to omega
+    no_coupling_log_z = read_in_log_z_distribution(BETA)
+    no_coupling_omega = [logz / BETA for logz in no_coupling_log_z] 
+
     yes_coupling_density = prepareForPlot(path, 0)
-    #print yes_coupling_density
+
     x = []
     N = []
+
     for i in range(len(yes_coupling_density[0])):
         x.append(math.log(yes_coupling_density[0][i]))
         N.append(yes_coupling_density[1][i])
+
     new_N = averageData.movingAverage(N)
     integrated_N = [1.0] * len(new_N)
+
     x = x[1:-1]
-    #print len(no_coupling_omega)
-    #print len(new_N)
-    #print len(x)
     no_coupling_omega = no_coupling_omega[1:-1]
-    count = 0
-    for i in range(1, len(new_N)):
-        #print integrated_N
-        integrated_N[i] = integrate.simps(new_N[0:i], x[0:i]) / no_coupling_omega[i]
-        count += 1
-        #print 'Number of traversals' + str(count)
-    return x, integrated_N
+
+    # integrate N
+    #count = 0
+    #for i in range(1, len(new_N)):
+    #    integrated_N[i] = integrate.simps(new_N[0:i], x[0:i]) 
+    #    count += 1
+
+    integrated_N = integrate.cumtrapz(new_N, x)
+
+    # divide integrated N by fugacity (aka e^(beta*mu))
+    log_z_with_coupling = [a[0] / math.exp(a[1]) for a in zip(integrated_N, x)]
+
+    ratio = [a[0] / a[1] for a in zip(log_z_with_coupling, no_coupling_log_z[1:-1])]
+
+    return x, ratio
 
 def plot(data_tuple):
     plt.plot(data_tuple[0], data_tuple[1], marker='.') #, linestyle='')
+    plt.title(r'$\beta =$' + "%0.1f" % BETA)
 
 def plotAll(initial_path, var_num):
     for dir in os.listdir(initial_path):
@@ -265,15 +295,15 @@ def getPressure(calculate=False):
         writeAllDataToFile(INPUT, '../data_Pressure/', 3)
     plotAllFromFile('../data_Pressure/')
     plt.xlabel(r'$\beta\mu$')
-    plt.ylabel(r'$P/P_0$')
+    plt.ylabel(r'$\Omega/\Omega_0$')
     plt.show()
 
     
 
 
-getDensityBMPlot(True)
+#getDensityBMPlot(True)
 #getContactBMPlot()
-#getPressure(calculate=True)
+getPressure(calculate=True)
 #print calculateOmegaNaught(BETA, 0)
 #print NumberDensityNoCoupling(OmegaNaughtDistribution(BETA, None, '../fugacity_input.txt'))
 
