@@ -9,8 +9,8 @@ import aggregateData as ag
 import matplotlib.pyplot as plt
 
 #--------- CONSTANTS ----------------#
-INPUT = '../exec/beta_8.0'
-BETA = 8.0
+INPUT = '../exec/beta_2.0'
+BETA = 2.0
 Nx = 40
 
 L = 1.00 * Nx
@@ -271,9 +271,9 @@ def getPressure(calculate=False):
     
 
 
-#getDensityBMPlot(True)
+getDensityBMPlot(True)
 #getContactBMPlot()
-getPressure(calculate=True)
+#getPressure(calculate=True)
 #print calculateOmegaNaught(BETA, 0)
 #print NumberDensityNoCoupling(OmegaNaughtDistribution(BETA, None, '../fugacity_input.txt'))
 
