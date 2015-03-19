@@ -128,19 +128,23 @@ def prepareBMvsDimensionlessDensity_2(path):
     #no_coupling_results = NumberDensityNoCoupling(number_p_distribution(BETA, '../fugacity_input.txt'))
     no_coupling_results = read_in_number_p_distribution(BETA)
     yes_coupling = prepareForPlot(path, 0)
-    x = []
-    y = []
-    for i in range(len(yes_coupling[0])):
-        try:
-            #print yes_coupling[0][i], yes_coupling[1][i], no_coupling_results[i]
-            x.append(math.log(yes_coupling[0][i]))
-            y.append(yes_coupling[1][i] / no_coupling_results[i])
-            #print yes_coupling[1][i] / no_coupling_results[i]
-            #y.append(no_coupling_results[i])
-            #y.append(yes_coupling[1][i])
-        except:
-	    print 'passed'
-            pass
+    #x = []
+    #y = []
+    #for i in range(len(yes_coupling[0])):
+        #try:
+            ##print yes_coupling[0][i], yes_coupling[1][i], no_coupling_results[i]
+            #x.append(math.log(yes_coupling[0][i]))
+            #y.append(yes_coupling[1][i] / no_coupling_results[i])
+            ##print yes_coupling[1][i] / no_coupling_results[i]
+            ##y.append(no_coupling_results[i])
+            ##y.append(yes_coupling[1][i])
+        #except:
+	    #print 'passed'
+            #pass
+    x = [math.log(a) for a in yes_coupling[0]]
+    y = [a[0] / a[1] for a in zip(yes_coupling[1], no_coupling_results)]
+    print len(x), len(y)
+    exit()
     return x,y
 
 # Deprecated
@@ -182,12 +186,6 @@ def prepareBMvsDimensionlessPressure(path):
     #no_coupling_omega = [logz / BETA for logz in no_coupling_log_z] 
 
     yes_coupling_density = prepareForPlot(path, 0)
-
-    #x = []
-    #N = []
-    #for i in range(len(yes_coupling_density[0])):
-        #x.append(math.log(yes_coupling_density[0][i]))
-        #N.append(yes_coupling_density[1][i])
 
     x = [math.log(a) for a in yes_coupling_density[0]]
     N = yes_coupling_density[1]
@@ -304,9 +302,9 @@ def getPressure(calculate=False):
     
 
 
-#getDensityBMPlot(True)
+getDensityBMPlot(True)
 #getContactBMPlot()
-getPressure(calculate=True)
+#getPressure(calculate=True)
 #print NumberDensityNoCoupling(OmegaNaughtDistribution(BETA, None, '../fugacity_input.txt'))
 
 
