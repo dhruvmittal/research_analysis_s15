@@ -122,29 +122,13 @@ def read_in_log_z_distribution(beta):
 	val = [float(x) for x in val]
 	return val
 
+# The one I use now
 def prepareBMvsDimensionlessDensity_2(path):
-    #no_coupling_results = NumberDensityNoCoupling(OmegaNaughtDistribution(BETA, None, '../fugacity_input.txt'))
-    #no_coupling_results = NumberDensityNoCoupling(number_p_distribution_numerical(BETA, '../fugacity_input.txt'))
-    #no_coupling_results = NumberDensityNoCoupling(number_p_distribution(BETA, '../fugacity_input.txt'))
     no_coupling_results = read_in_number_p_distribution(BETA)
     yes_coupling = prepareForPlot(path, 0)
-    #x = []
-    #y = []
-    #for i in range(len(yes_coupling[0])):
-        #try:
-            ##print yes_coupling[0][i], yes_coupling[1][i], no_coupling_results[i]
-            #x.append(math.log(yes_coupling[0][i]))
-            #y.append(yes_coupling[1][i] / no_coupling_results[i])
-            ##print yes_coupling[1][i] / no_coupling_results[i]
-            ##y.append(no_coupling_results[i])
-            ##y.append(yes_coupling[1][i])
-        #except:
-	    #print 'passed'
-            #pass
     x = [math.log(a) for a in yes_coupling[0]]
     y = [a[0] / a[1] for a in zip(yes_coupling[1], no_coupling_results)]
     print len(x), len(y)
-    exit()
     return x,y
 
 # Deprecated
