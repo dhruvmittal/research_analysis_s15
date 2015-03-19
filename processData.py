@@ -284,11 +284,24 @@ def getPressure(calculate=False):
     plt.show()
 
     
-
-
-getDensityBMPlot(True)
-#getContactBMPlot()
-#getPressure(calculate=True)
-#print NumberDensityNoCoupling(OmegaNaughtDistribution(BETA, None, '../fugacity_input.txt'))
-
+while(True):
+    what_thing = raw_input('what thing? ')
+    if what_thing == 'd':
+        getDensityBMPlot(calculate=True)
+    if what_thing == 'df':
+        getDensityBMPlot()
+    elif what_thing == 'c':
+        getContactBMPlot(calculate=True)
+    elif what_thing == 'cf':
+        getContactBMPlot()
+    elif what_thing == 'p':
+        getPressure(calculate=True)
+    elif what_thing == 'pf':
+        getPressure()
+    elif what_thing == 'k':
+        pass
+    elif what_thing == 'q':
+        exit()
+    else:
+        print("that's not a thing ([d,c,p,k][ ,f], q)")
 
