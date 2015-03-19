@@ -128,7 +128,6 @@ def prepareBMvsDimensionlessDensity_2(path):
     yes_coupling = prepareForPlot(path, 0)
     x = [math.log(a) for a in yes_coupling[0]]
     y = [a[0] / a[1] for a in zip(yes_coupling[1], no_coupling_results)]
-    print len(x), len(y)
     return x,y
 
 # Deprecated
