@@ -183,11 +183,14 @@ def prepareBMvsDimensionlessPressure(path):
 
     yes_coupling_density = prepareForPlot(path, 0)
 
-    x = []
-    N = []
-    for i in range(len(yes_coupling_density[0])):
-        x.append(math.log(yes_coupling_density[0][i]))
-        N.append(yes_coupling_density[1][i])
+    #x = []
+    #N = []
+    #for i in range(len(yes_coupling_density[0])):
+        #x.append(math.log(yes_coupling_density[0][i]))
+        #N.append(yes_coupling_density[1][i])
+
+    x = [math.log(a) for a in yes_coupling_density[0]]
+    N = yes_coupling_density[1]
 
     new_N = averageData.movingAverage(N)
 
