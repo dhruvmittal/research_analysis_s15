@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import averageData
 import os
 import math
