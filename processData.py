@@ -203,6 +203,9 @@ def prepareBMvsDimensionlessPressure(path):
     
     ratio = [a[0] / a[1] for a in zip(yes_coupling_log_z, no_coupling_log_z[1:-1])]
 
+    ratio = [4 * a for a in ratio]
+
+
     return x, ratio
 
 def plot(data_tuple):
