@@ -3,14 +3,14 @@
 import numpy
 
 MAX_STEPS = 22000
-#MAX_STEPS = 10
 
+START_AT_NX = {40:90, 60:110}
 
 # Format: [Npart, EK, EP, EVext, ET]
 
 def get(filename):
     with open(filename) as f:
-        for _ in xrange(90):
+        for _ in xrange(START_AT_NX[60]):
             next(f)
         count_entries = 0
         Npart = 0

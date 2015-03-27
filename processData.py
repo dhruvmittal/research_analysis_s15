@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 #BETA = 8.0
 BETA = raw_input('beta = ')
 BETA = float(BETA)
-INPUT = '../exec/beta_' + '%0.1f' % BETA
+INPUT = '../exec_B_2_Nx_60/beta_' + '%0.1f' % BETA
+# INPUT = '../exec/beta_' + '%0.1f' % BETA
 Nx = 40
 
 L = 1.00 * Nx # This is wrong
@@ -129,6 +130,8 @@ def prepareBMvsDimensionlessDensity_2(path):
     no_coupling_results = read_in_number_p_distribution(BETA)
     yes_coupling = prepareForPlot(path, 0)
     x = [math.log(a) for a in yes_coupling[0]]
+
+    # y = [a[0] for a in zip(yes_coupling[1], no_coupling_results)]
     y = [a[0] / a[1] for a in zip(yes_coupling[1], no_coupling_results)]
     return x,y
 
@@ -147,7 +150,6 @@ def prepareBMvsDimensionlessDensity(path_no_coupling, path):
     return x,y
 
 def prepareBMvsDimensionlessContact(path):
-    #no_coupling = prepareForPlot(path_no_coupling, 2, need_coupling=True)
     yes_coupling = prepareForPlot(path, 2, need_coupling=True)
     x = []
     y = []
@@ -157,40 +159,34 @@ def prepareBMvsDimensionlessContact(path):
             interaction_avg_energy =  yes_coupling[1][i]
             contact = -1 * g * interaction_avg_energy
             gamma_squared = BETA * g**2
+            # Note that this L is the incorrect L
             y.append(contact * math.pi * BETA**2 / (2 * L * gamma_squared))
         #except:
             #pass
     return x,y
 
 def prepareBMvsDimensionlessPressure(path):
-    # logZ = integrate N dz / z
+    # logZ = integrate/z N dz
     # read in logZ
     no_coupling_log_z = read_in_log_z_distribution(BETA)
 
-    # convert it to omega
-    #no_coupling_omega = [logz / BETA for logz in no_coupling_log_z] 
-
+    # Prepare data 
     yes_coupling_density = prepareForPlot(path, 0)
-
     x = [math.log(a) for a in yes_coupling_density[0]]
     N = yes_coupling_density[1]
 
+    # Moving average + associated resizing
     new_N = averageData.movingAverage(N)
-
     x = x[1:-1]
     no_coupling_log_z = no_coupling_log_z[1:-1]
-    #no_coupling_omega = no_coupling_omega[1:-1]
 
-    # integrate N
-    integrated_N = integrate.cumtrapz(new_N, [math.exp(betamu) for betamu in x])
-
-    # divide integrated N by fugacity (aka e^(beta*mu))
-    yes_coupling_log_z = [a[0] / math.exp(a[1]) for a in zip(integrated_N, x)]
+    # divide N by fugacity (aka e^(beta*mu))
+    Noverz = [a[0] / math.exp(a[1]) for a in zip(new_N, x)]
     
+    # integrate N/z
+    yes_coupling_log_z = integrate.cumtrapz(Noverz, [math.exp(betamu) for betamu in x])
+
     ratio = [a[0] / a[1] for a in zip(yes_coupling_log_z, no_coupling_log_z[1:-1])]
-
-    ratio = [4 * a for a in ratio]
-
 
     return x, ratio
 
